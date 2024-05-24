@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Obtención de Nombres de Funciones PHP</title>
+  </head>
+  <body>
+    <h1 class="titulo">Obtener Nombres de Funciones de un Archivo PHP</h1>
+    <form id="functionForm">
+      <label for="phpFile">Selecciona el archivo PHP:</label>
+      <input type="file" id="phpFile" accept=".php" />
+      <button type="submit">Obtener Funciones</button>
+    </form>
+    <h2>Funciones Encontradas:</h2>
+    <ul id="functionList"></ul>
+
+    <script>
+      document.getElementById("functionForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const fileInput = document.getElementById("phpFile");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Por favor, selecciona un archivo PHP.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const fileContent = e.target.result;
+
+          const functionPattern = /function\s+([a-zA-Z0-9_]+)\s*\(/g;
+          let matches;
+          const functionNames = [];
+
+          while ((matches = functionPattern.exec(fileContent)) !== null) {
+            functionNames.push(matches[1]);
+          }
+
+          const functionList = document.getElementById("functionList");
+          functionList.innerHTML = "";
+
+          if (functionNames.length > 0) {
+            functionNames.forEach((functionName) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = `function ${functionName}`;
+              functionList.appendChild(listItem);
+            });
+          } else {
+            alert("No se encontraron funciones en el archivo.");
+          }
+        };
+
+        reader.onerror = function () {
+          alert("Ocurrió un error al leer el archivo.");
+        };
+
+        reader.readAsText(file);
+      });
+    </script>
+  </body>
+</html>
